@@ -1,14 +1,15 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { AppContext } from '../App';
 import AllButtons from './AllButtons';
+import axios from 'axios';
+import { useNavigate } from "react-router-dom";
 import FullTable from './FullTable';
-import Loader from './Loader';
-import PaginationBtn from './PaginationBtn';
-import TableBody from './TableBody';
+import toast from 'react-hot-toast';
 
 const Main = () => {
+    const navigate = useNavigate()
     const [option, setOption] = useState('')
-    const { searchOptions, setSearchOptions, setFormInput, bills, currentPage, setCurrentPage, pageCountArr, setPageCountArr, loading, currentCondition, pageData } = useContext(AppContext)
+    const { setSearchOptions, setFormInput, setCurrentPage, setBills, setUser, setLoading, setTotalInfo, setPageCountArr, setPageData, bills, searchOptions, currentPage } = useContext(AppContext)
     const handleSearch = (e) => {
         e.preventDefault()
         setCurrentPage(1)
@@ -23,6 +24,105 @@ const Main = () => {
             setSearchOptions({ criteria: '', searchInput: '' })
         }
     }
+    useEffect(() => {
+        const getBillings = async () => {
+            try {
+                const { data } = await axios({
+                    method: 'GET',
+                    url: 'http://localhost:5000/api/billing-list',
+                    headers: {
+                        email: localStorage.getItem('power-hacker-user'),
+                        authorization: `Bearer ${localStorage.getItem('token')}`,
+                    }
+                })
+                setBills(data)
+            }
+            catch (err) {
+                setUser(false)
+                localStorage.removeItem('power-hacker-user')
+                localStorage.removeItem('token')
+                toast.error('Something went wrong, Please Sign in again', { id: 'sssss' })
+                navigate('/login')
+            }
+        }
+        getBillings()
+    }, [])
+    useEffect(() => {
+        const getBillInfo = async () => {
+            try {
+                const { data } = await axios({
+                    method: 'GET',
+                    url: 'http://localhost:5000/api/all-bills-info',
+                    headers: {
+                        email: localStorage.getItem('power-hacker-user'),
+                        authorization: `Bearer ${localStorage.getItem('token')}`,
+                    }
+                })
+                setTotalInfo(data)
+                const initalArr = []
+                for (let i = 1; i <= Math.ceil(data?.billCount / 10); i++) {
+                    initalArr.push(i)
+                }
+                setPageCountArr(initalArr)
+            }
+            catch (err) {
+
+                setUser(false)
+                localStorage.removeItem('power-hacker-user')
+                localStorage.removeItem('token')
+                toast.error('Something went wrong, Please Sign in again', { id: 'sss' })
+                navigate('/login')
+            }
+        }
+        getBillInfo()
+    }, [])
+    useEffect(() => {
+        const getMaxTen = async () => {
+            try {
+                setLoading(true)
+                const { data } = await axios({
+                    method: 'GET',
+                    url: `http://localhost:5000/api/bills-max-ten?currentpage=${currentPage}&${searchOptions.criteria}=${searchOptions.searchInput}`,
+                    headers: {
+                        email: localStorage.getItem('power-hacker-user'),
+                        authorization: `Bearer ${localStorage.getItem('token')}`,
+                    }
+                })
+                const initalArr = []
+                if (searchOptions.searchInput) {
+                    const actual = bills.filter(b => b[searchOptions.criteria] === searchOptions.searchInput)
+                    for (let i = 1; i <= Math.ceil(actual.length / 10); i++) {
+                        initalArr.push(i)
+                    }
+                }
+                else {
+                    const { data } = await axios({
+                        method: 'GET',
+                        url: 'http://localhost:5000/api/all-bills-info', headers: {
+                            email: localStorage.getItem('power-hacker-user'),
+                            authorization: `Bearer ${localStorage.getItem('token')}`,
+                        }
+                    })
+                    for (let i = 1; i <= Math.ceil(data?.billCount / 10); i++) {
+                        initalArr.push(i)
+                    }
+                }
+                setPageCountArr(initalArr)
+                setPageData(data)
+                setLoading(false)
+            }
+            catch (err) {
+                setCurrentPage(1)
+                setSearchOptions({ criteria: '', searchInput: '' })
+                setUser(false)
+                localStorage.removeItem('power-hacker-user')
+                localStorage.removeItem('token')
+                toast.error('Something went wrong, Please Sign in again', { id: 'ss' })
+                navigate('/login')
+            }
+        }
+        getMaxTen()
+    }, [currentPage, searchOptions])
     return (
         <div>
             <div className="w-full flex justify-between px-3 py-4 items-center flex-col-reverse sm:flex-row">

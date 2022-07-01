@@ -1,10 +1,12 @@
 import axios from 'axios';
 import React, { useContext } from 'react';
+import { useNavigate } from "react-router-dom";
 import toast from 'react-hot-toast';
 import { AppContext } from '../App';
 const BillModal = ({ formInput, setFormInput, setLoading }) => {
     const { id, fullname, email, amount, phone } = formInput
-    const { currentCondition, setCurrentCondition, bills, setBills, setTotalInfo, totalBillInfo, setSearchOptions } = useContext(AppContext)
+    const { currentCondition, setCurrentCondition, bills, setBills, setTotalInfo, totalBillInfo, setSearchOptions, setUser } = useContext(AppContext)
+    const navigate = useNavigate()
     const handleForm = (e) => {
         e.preventDefault()
         // email validat
@@ -38,22 +40,35 @@ const BillModal = ({ formInput, setFormInput, setLoading }) => {
                 setFormInput(null)
                 setLoading(true)
                 userInput.id = Math.round(Math.random() * 10000000000).toString(16)
-                const { data } = await axios({
-                    method: 'POST',
-                    data: userInput,
-                    url: 'http://localhost:5000/api/add-billing'
-                })
-                if (data.acknowledged) {
-                    setBills([...bills, userInput])
-                    setTotalInfo({
-                        ...totalBillInfo,
-                        paidCount: totalBillInfo.paidCount + userInput.amount
+                try {
+                    const { data } = await axios({
+                        method: 'POST',
+                        data: userInput,
+                        url: 'http://localhost:5000/api/add-billing',
+                        headers: {
+                            authorization: `Bearer ${localStorage.getItem('token')}`,
+                            email: localStorage.getItem('power-hacker-user'),
+                        }
                     })
-                    setSearchOptions({ criteria: '', searchInput: '' })
-                    toast.success('Successfully added billing to database')
+                    if (data.acknowledged) {
+                        setBills([...bills, userInput])
+                        setTotalInfo({
+                            ...totalBillInfo,
+                            paidCount: totalBillInfo.paidCount + userInput.amount
+                        })
+                        setSearchOptions({ criteria: '', searchInput: '' })
+                        toast.success('Successfully added billing to database')
+                    }
+                    else {
+                        toast.error('Something went wrong')
+                    }
                 }
-                else {
-                    toast.error('Something went wrong')
+                catch (err) {
+                    setUser(false)
+                    localStorage.removeItem('power-hacker-user')
+                    localStorage.removeItem('token')
+                    toast.error('Something went wrong, Please Sign in again')
+                    navigate('/login')
                 }
                 setCurrentCondition('')
                 setTimeout(() => {
@@ -70,22 +85,35 @@ const BillModal = ({ formInput, setFormInput, setLoading }) => {
                 userInput.id = id
                 const restBills = bills.filter(bill => bill.id !== id)
 
-                const { data } = await axios({
-                    method: 'PUT',
-                    data: userInput,
-                    url: `http://localhost:5000/api/add-billing/${id}`
-                })
-                if (data.acknowledged) {
-                    setBills([...restBills, userInput])
-                    setTotalInfo({
-                        ...totalBillInfo,
-                        paidCount: (totalBillInfo.paidCount - amount) + userInput.amount
+                try {
+                    const { data } = await axios({
+                        method: 'PUT',
+                        data: userInput,
+                        url: `http://localhost:5000/api/update-billing/${id}`,
+                        headers: {
+                            email: localStorage.getItem('power-hacker-user'),
+                            authorization: `Bearer ${localStorage.getItem('token')}`,
+                        }
                     })
-                    setSearchOptions({ criteria: '', searchInput: '' })
-                    toast.success('Successfully updated billing')
+                    if (data.acknowledged) {
+                        setBills([...restBills, userInput])
+                        setTotalInfo({
+                            ...totalBillInfo,
+                            paidCount: (totalBillInfo.paidCount - amount) + userInput.amount
+                        })
+                        setSearchOptions({ criteria: '', searchInput: '' })
+                        toast.success('Successfully updated billing')
+                    }
+                    else {
+                        toast.error('Something went wrong')
+                    }
                 }
-                else {
-                    toast.error('Something went wrong')
+                catch (err) {
+                    setUser(false)
+                    localStorage.removeItem('power-hacker-user')
+                    localStorage.removeItem('token')
+                    toast.error('Something went wrong, Please Sign in again')
+                    navigate('/login')
                 }
                 setCurrentCondition('')
                 setTimeout(() => {
