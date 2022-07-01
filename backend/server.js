@@ -31,7 +31,40 @@ const run = async () => {
             };
             return res.send(await billCollection.updateOne(filter, updateDoc))
         })
+        app.delete('/api/delete-billing/:billId', async (req, res) => {
+            const query = { id: req.params.billId }
+            return res.send(await billCollection.deleteOne(query))
+        })
+        app.get('/api/all-bills-info', async (req, res) => {
+            const billCount = await billCollection.estimatedDocumentCount()
+            const paidArray = await billCollection.find({}).toArray()
+            const paidCount = sumOfBill(paidArray)
+            res.send({ billCount, paidCount })
+        })
+        app.get('/api/bills-max-ten', async (req, res) => {
+            const currentPage = Number(req.query.currentpage) - 1
+            if (req.query.fullname || req.query.phone || req.query.email) {
+                if (req.query.fullname) {
+                    return res.send(await billCollection.find({ fullname: req.query.fullname }).skip(currentPage * 10).limit(10).toArray())
+                }
+                else if (req.query.email) {
+                    return res.send(await billCollection.find({ email: req.query.email }).skip(currentPage * 10).limit(10).toArray())
+                }
+                else {
+                    return res.send(await billCollection.find({ phone: req.query.phone }).skip(currentPage * 10).limit(10).toArray())
+                }
+            }
+            else {
+                return res.send(await billCollection.find({}).skip(currentPage * 10).limit(10).toArray())
+            }
+        })
     }
     finally { }
 }
 run().catch(console.dir)
+
+const sumOfBill = (arr) => {
+    const amounts = arr.map(bill => bill.amount)
+    const cost = amounts.reduce((acc, cur) => acc + cur, 0)
+    return cost
+}

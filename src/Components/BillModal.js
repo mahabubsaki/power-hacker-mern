@@ -1,10 +1,10 @@
 import axios from 'axios';
-import React, { useContext, useState } from 'react';
+import React, { useContext } from 'react';
 import toast from 'react-hot-toast';
 import { AppContext } from '../App';
 const BillModal = ({ formInput, setFormInput, setLoading }) => {
     const { id, fullname, email, amount, phone } = formInput
-    const { currentCondition, setCurrentCondition, bills, setBills } = useContext(AppContext)
+    const { currentCondition, setCurrentCondition, bills, setBills, setTotalInfo, totalBillInfo, setSearchOptions } = useContext(AppContext)
     const handleForm = (e) => {
         e.preventDefault()
         // email validat
@@ -38,18 +38,24 @@ const BillModal = ({ formInput, setFormInput, setLoading }) => {
                 setFormInput(null)
                 setLoading(true)
                 userInput.id = Math.round(Math.random() * 10000000000).toString(16)
-                setBills([...bills, userInput])
                 const { data } = await axios({
                     method: 'POST',
                     data: userInput,
                     url: 'http://localhost:5000/api/add-billing'
                 })
                 if (data.acknowledged) {
+                    setBills([...bills, userInput])
+                    setTotalInfo({
+                        ...totalBillInfo,
+                        paidCount: totalBillInfo.paidCount + userInput.amount
+                    })
+                    setSearchOptions({ criteria: '', searchInput: '' })
                     toast.success('Successfully added billing to database')
                 }
                 else {
                     toast.error('Something went wrong')
                 }
+                setCurrentCondition('')
                 setTimeout(() => {
                     setLoading(false)
                 }, 500)
@@ -63,18 +69,25 @@ const BillModal = ({ formInput, setFormInput, setLoading }) => {
                 setLoading(true)
                 userInput.id = id
                 const restBills = bills.filter(bill => bill.id !== id)
-                setBills([...restBills, userInput])
+
                 const { data } = await axios({
                     method: 'PUT',
                     data: userInput,
                     url: `http://localhost:5000/api/add-billing/${id}`
                 })
                 if (data.acknowledged) {
+                    setBills([...restBills, userInput])
+                    setTotalInfo({
+                        ...totalBillInfo,
+                        paidCount: (totalBillInfo.paidCount - amount) + userInput.amount
+                    })
+                    setSearchOptions({ criteria: '', searchInput: '' })
                     toast.success('Successfully updated billing')
                 }
                 else {
                     toast.error('Something went wrong')
                 }
+                setCurrentCondition('')
                 setTimeout(() => {
                     setLoading(false)
                 }, 500)
