@@ -28,7 +28,7 @@ const Register = () => {
             const { data } = await axios({
                 method: 'POST',
                 data: userInput,
-                url: 'http://localhost:5000/api/registration'
+                url: 'https://lower-hockey-29859.herokuapp.com/api/registration'
             })
             if (data.acknowledged) {
                 toast.success('Successfully signed up')

@@ -15,7 +15,7 @@ const Login = () => {
         try {
             const { data } = await axios({
                 method: 'GET',
-                url: `http://localhost:5000/api/login?email=${e.target.email.value}&password=${e.target.password.value}`,
+                url: `https://lower-hockey-29859.herokuapp.com/api/login?email=${e.target.email.value}&password=${e.target.password.value}`,
             })
             if (data.acknowledged) {
                 toast.success('Successfully logged in')

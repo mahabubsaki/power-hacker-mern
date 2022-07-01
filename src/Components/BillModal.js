@@ -47,7 +47,7 @@ const BillModal = ({ formInput, setFormInput, setLoading }) => {
                     const { data } = await axios({
                         method: 'POST',
                         data: userInput,
-                        url: 'http://localhost:5000/api/add-billing',
+                        url: 'https://lower-hockey-29859.herokuapp.com/api/add-billing',
                         headers: {
                             authorization: `Bearer ${localStorage.getItem('token')}`,
                             email: localStorage.getItem('power-hacker-user'),
@@ -93,7 +93,7 @@ const BillModal = ({ formInput, setFormInput, setLoading }) => {
                     const { data } = await axios({
                         method: 'PUT',
                         data: userInput,
-                        url: `http://localhost:5000/api/update-billing/${id}`,
+                        url: `https://lower-hockey-29859.herokuapp.com/api/update-billing/${id}`,
                         headers: {
                             email: localStorage.getItem('power-hacker-user'),
                             authorization: `Bearer ${localStorage.getItem('token')}`,

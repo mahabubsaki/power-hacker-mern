@@ -35,7 +35,7 @@ function App() {
     try {
       const { data } = await axios({
         method: 'DELETE',
-        url: `http://localhost:5000/api/delete-billing/${billId}`,
+        url: `https://lower-hockey-29859.herokuapp.com/api/delete-billing/${billId}`,
         headers: {
           email: localStorage.getItem('power-hacker-user'),
           authorization: `Bearer ${localStorage.getItem('token')}`,

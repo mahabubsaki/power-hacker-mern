@@ -33,7 +33,7 @@ const Main = () => {
             try {
                 const { data } = await axios({
                     method: 'GET',
-                    url: 'http://localhost:5000/api/billing-list',
+                    url: 'https://lower-hockey-29859.herokuapp.com/api/billing-list',
                     headers: {
                         email: localStorage.getItem('power-hacker-user'),
                         authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -58,7 +58,7 @@ const Main = () => {
             try {
                 const { data } = await axios({
                     method: 'GET',
-                    url: 'http://localhost:5000/api/all-bills-info',
+                    url: 'https://lower-hockey-29859.herokuapp.com/api/all-bills-info',
                     headers: {
                         email: localStorage.getItem('power-hacker-user'),
                         authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -90,7 +90,7 @@ const Main = () => {
                 // getting the maximum 10 data from api
                 const { data } = await axios({
                     method: 'GET',
-                    url: `http://localhost:5000/api/bills-max-ten?currentpage=${currentPage}&${searchOptions.criteria}=${searchOptions.searchInput}`,
+                    url: `https://lower-hockey-29859.herokuapp.com/api/bills-max-ten?currentpage=${currentPage}&${searchOptions.criteria}=${searchOptions.searchInput}`,
                     headers: {
                         email: localStorage.getItem('power-hacker-user'),
                         authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -110,7 +110,7 @@ const Main = () => {
                     // if search query is empty that we can surely tell that user is selected all from the dropdown so we need to re calculate the data count so calling api
                     const { data } = await axios({
                         method: 'GET',
-                        url: 'http://localhost:5000/api/all-bills-info', headers: {
+                        url: 'https://lower-hockey-29859.herokuapp.com/api/all-bills-info', headers: {
                             email: localStorage.getItem('power-hacker-user'),
                             authorization: `Bearer ${localStorage.getItem('token')}`,
                         }
