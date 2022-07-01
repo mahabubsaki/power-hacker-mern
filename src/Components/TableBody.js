@@ -1,11 +1,11 @@
 import React, { useContext } from 'react';
 import Swal from 'sweetalert2';
 import { AppContext } from '../App';
-import Loader from './Loader';
 
 const TableBody = ({ bill, no }) => {
     const { id, fullname, email, phone, amount } = bill
     const { setFormInput, handleDelete } = useContext(AppContext)
+    // asking for confirmation
     const confirmation = () => {
         Swal.fire({
             title: 'Delete',

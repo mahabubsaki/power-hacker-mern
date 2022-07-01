@@ -4,7 +4,9 @@ import { useNavigate } from "react-router-dom";
 import toast from 'react-hot-toast';
 import { AppContext } from '../App';
 const BillModal = ({ formInput, setFormInput, setLoading }) => {
+    // destructuring the input object if user want to update a bill
     const { id, fullname, email, amount, phone } = formInput
+    // extracting data from context
     const { currentCondition, setCurrentCondition, bills, setBills, setTotalInfo, totalBillInfo, setSearchOptions, setUser } = useContext(AppContext)
     const navigate = useNavigate()
     const handleForm = (e) => {
@@ -39,6 +41,7 @@ const BillModal = ({ formInput, setFormInput, setLoading }) => {
             const addOnDb = async () => {
                 setFormInput(null)
                 setLoading(true)
+                // genereting a random id
                 userInput.id = Math.round(Math.random() * 10000000000).toString(16)
                 try {
                     const { data } = await axios({
@@ -63,6 +66,7 @@ const BillModal = ({ formInput, setFormInput, setLoading }) => {
                         toast.error('Something went wrong')
                     }
                 }
+                // in error we returning user to login
                 catch (err) {
                     setUser(false)
                     localStorage.removeItem('power-hacker-user')
@@ -108,6 +112,7 @@ const BillModal = ({ formInput, setFormInput, setLoading }) => {
                         toast.error('Something went wrong')
                     }
                 }
+                // in error we returning user to login
                 catch (err) {
                     setUser(false)
                     localStorage.removeItem('power-hacker-user')

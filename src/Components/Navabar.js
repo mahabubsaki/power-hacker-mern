@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 const Navabar = () => {
     const { totalBillInfo, user, setUser } = useContext(AppContext)
     const navigate = useNavigate()
+    // asking confirmation
     const handleLogout = () => {
         Swal.fire({
             title: 'Logout',
@@ -27,6 +28,7 @@ const Navabar = () => {
             <div class="navbar bg-primary">
                 <span class="btn btn-ghost normal-case text-xl">Power Hacker</span>
                 <div className="ml-auto">
+                    {/* if user is available showing the total and logout button */}
                     {user && <p>Paid Total : ${totalBillInfo?.paidCount}</p>}
                     {user && <button class="ml-4 btn btn-secondary" onClick={handleLogout}>Logout</button>}
                 </div>

@@ -2,6 +2,7 @@ import React from 'react';
 import { HashLoader } from 'react-spinners';
 
 const Loader = ({ children }) => {
+    // giving a text under from children loading depending the user action 
     return (
         <div className="flex justify-center items-center h-[400px]">
             <div className="flex flex-col items-center">

@@ -11,10 +11,12 @@ import Login from './Components/Login';
 import { useNavigate } from "react-router-dom";
 import RequireAuth from './Components/RequireAuth';
 import Register from './Components/Register';
+// creating context
 export const AppContext = createContext()
 
 function App() {
   const navigate = useNavigate()
+  // declaring all the states
   const [searchOptions, setSearchOptions] = useState({ criteria: '', searchInput: '' })
   const [user, setUser] = useState(false)
   const [formInput, setFormInput] = useState(null)
@@ -25,6 +27,8 @@ function App() {
   const [currentCondition, setCurrentCondition] = useState('')
   const [bills, setBills] = useState([])
   const [pageData, setPageData] = useState([])
+
+  // a delete function which will recieve a id and delete it
   const handleDelete = async (billId) => {
     setCurrentCondition('deleting')
     setLoading(true)
@@ -56,7 +60,7 @@ function App() {
       }
     }
     catch (err) {
-
+      // if any error accurs sending user to login page
       setUser(false)
       localStorage.removeItem('power-hacker-user')
       localStorage.removeItem('token')
@@ -68,6 +72,7 @@ function App() {
       setLoading(false)
     }, 500)
   }
+  // sending all the states and dispatchs into context to extract and use
   return (
     <AppContext.Provider value={{ searchOptions, setSearchOptions, setFormInput, setLoading, currentCondition, setCurrentCondition, bills, setBills, handleDelete, totalBillInfo, setTotalInfo, pageCountArr, setPageCountArr, currentPage, setCurrentPage, loading, pageData, setPageData, user, setUser }}>
       <div className="App">
@@ -78,6 +83,7 @@ function App() {
           <Route path="/login" element={<Login />}></Route>
           <Route path="/register" element={<Register />}></Route>
         </Routes>
+        {/* this modal will open while in both case of updating or adding bill */}
         {formInput && <BillModal formInput={formInput} setLoading={setLoading} setFormInput={setFormInput} />}
       </div>
     </AppContext.Provider>

@@ -4,7 +4,9 @@ import Loader from './Loader';
 import TableBody from './TableBody';
 
 const FullTable = () => {
+    // extracting states from context
     const { pageData, loading, currentCondition } = useContext(AppContext)
+    // returning loading while updating something
     if (loading) {
         return <Loader>{currentCondition}</Loader>
     }
@@ -24,6 +26,7 @@ const FullTable = () => {
                     </tr>
                 </thead>
                 <tbody>
+                    {/* sorting the data into descending order */}
                     {pageData.sort((a, b) => b.amount - a.amount).map((bill, index) => <TableBody
                         no={index + 1}
                         key={bill.id}
